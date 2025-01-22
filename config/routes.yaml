@@ -1,0 +1,18 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+
+get_users:
+  path: /users
+  controller: App\Controller\ApiController::getUsers
+
+add_user:
+  path: /add-user
+  controller: App\Controller\ApiController::addUser
+
+orders_by_category:
+    path: /orders-by-category
+    controller: App\Controller\OrderController::getOrdersByCategory
