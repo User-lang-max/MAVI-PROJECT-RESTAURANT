@@ -1,0 +1,138 @@
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des commandes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/commd.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">Gestion Admin</div>
+        <div class="nav-links">
+            <a href="{{ path('admin_index') }}">
+                <i class="fas fa-home"></i>
+                <span>Accueil</span>
+            </a>
+            <a href="{{ path('reservation_index') }}">
+                <i class="fas fa-users"></i>
+                <span>Page principale</span>
+            </a>
+            <a href="{{ path('orders_list') }}">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Commandes</span>
+            </a>
+            <a href="{{ path('login') }}">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Déconnexion</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1>Liste des commandes</h1>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom complet</th>
+                        <th>Email</th>
+                        <th>Type de repas</th>
+                        <th>Plat</th>
+                        <th>Adresse</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ order.id }}</td>
+                            <td>{{ order.fullname }}</td>
+                            <td>{{ order.email }}</td>
+                            <td>{{ order.mealType }}</td>
+                            <td>{{ order.menuItem }}</td>
+                            <td>{{ order.adresse }}</td>
+                            <td>
+                                <form method="POST" action="{{ path('orders_delete', { id: order.id }) }}">
+                                    <button type="submit" class="delete-button">
+                                    <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4">Aucune commande disponible.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+            <canvas id="myChart" ></canvas>
+        
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const response = await fetch('/orders-by-category');
+            const data = await response.json();
+
+            const categories = data.map(item => item.category);
+            const counts = data.map(item => item.count);
+
+            const ctx = document.getElementById('myChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        label: 'Nombre de commandes',
+                        data: counts,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgb(220, 19, 19)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'white' // Couleur des étiquettes de la légende
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Nombre de commandes',
+                            color: 'white' // Couleur du titre de l'axe Y
+                        },
+                        ticks: {
+                            color: 'white' // Couleur des ticks de l'axe Y
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Catégories de repas',
+                            color: 'white' // Couleur du titre de l'axe X
+                        },
+                        ticks: {
+                            color: 'white' // Couleur des ticks de l'axe X
+                        }
+                    }
+                }
+            }
+            });
+        });
+    </script>
+</body>
+</html>

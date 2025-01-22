@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Utilisateurs</title>
+    <link rel="stylesheet" type="text/css" href="/css/ADMIN.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+   <div class="sidebar">
+    <div class="logo">Gestion Admin</div>
+    <div class="nav-links">
+        <!-- Accueil -->
+        <a href="{{ path('admin_index') }}">
+            <i class="fas fa-home"></i>
+            <span>Accueil</span>
+        </a>
+
+        <!-- Page principale -->
+        <a href="{{ path('reservation_index') }}">
+            <i class="fas fa-users"></i>
+            <span>Page principale</span>
+        </a>
+
+        <!-- Commandes -->
+        <a href="{{ path('orders_list') }}">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Commandes</span>
+        </a>
+
+        <!-- Déconnexion -->
+        <a href="{{ path('login') }}">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Déconnexion</span>
+        </a>
+    </div>
+</div>
+
+
+    <!-- Main Content -->
+    <section class="main-content">
+       <div class="dashboard-container">
+            <!-- Total Reservations Per Day Card -->
+            <div class="card" id="reservations-card">
+                <div class="card-content">
+                    <h3><i class="fas fa-calendar-check"></i> Total Reservations</h3>
+                    <div class="statistic">
+                        <i class="fas fa-user-check"></i>
+                        <span id="reservations-count">{{ totalReservations }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="orders-card">
+                <div class="card-content">
+                    <h3><i class="fas fa-shopping-cart"></i> Total Commandes</h3>
+                    <div class="statistic">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="orders-count">{{ totalOrders }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="clients-card">
+                <div class="card-content">
+                    <h3><i class="fas fa-users"></i> Total Clients</h3>
+                    <div class="statistic">
+                        <i class="fas fa-user-check"></i>
+                        <span id="clients-count">{{ totalClients }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reservation List -->
+        <div class="reservation-list">
+            <div class="actions">
+                <button class="btn-primary" onclick="openModal()">Nouvelle Réservation</button>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart">
+                    <canvas id="myChart"></canvas>
+                </div>
+              
+            <table class="reservations-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom Complet</th>
+                        <th>Email</th>
+                        <th>Téléphone</th>
+                        <th>Heure</th>
+                         <th>Nombre de personnes</th> <!-- Nouvelle colonne -->
+                         <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                        <tr>
+                            <td>{{ reservation.id }}</td>
+                            <td>{{ reservation.nomComplet }}</td> 
+                            <td>{{ reservation.email }}</td>
+                            <td>{{ reservation.telephone }}</td>
+                            <td>{{ reservation.heure|date('H:i') }}</td>
+                              <td>{{ reservation.guests }}</td> <!-- Affichage du nombre de personnes -->
+                              <td>{{ reservation.date|date('Y-m-d') }}</td> 
+                            <td>
+                                <button class="btn-edit" onclick="openModal({{ reservation.id ? reservation|json_encode|raw : '{}' }})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-delete" onclick="deleteReservation({{ reservation.id }})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Modal -->
+    <div class="modal" id="reservation-modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <form method="POST" action="{{ path('add_reservation') }}">
+                <input type="hidden" id="reservation-id" name="id">
+                <div>
+                    <label for="name">Nom Complet:</label>
+                    <input type="text" id="name" name="nom_complet" required>
+                </div>
+                <div>
+                    <label for="email">Email :</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div>
+                    <label for="telephone">Téléphone :</label>
+                    <input type="text" id="telephone" name="telephone" required>
+                </div>
+                <div>
+                    <label for="heure">Heure :</label>
+                    <input type="time" id="heure" name="heure" required>
+                </div>
+                <div>
+                    <label for="guests">Nombre de personnes :</label>
+                    <input type="number" id="guests" name="guests" required>
+                </div>
+                <div>
+                    <label for="date">Date :</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+                <button type="submit" class="submit">Sauvegarder</button>
+                <button type="button" class="submit" onclick="closeModal()">Annuler</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+
+
+    <script>
+        function openModal(reservation = null) {
+    const modal = document.getElementById('reservation-modal'); // Correct ID
+    const form = document.querySelector('form');
+    form.reset();
+
+    if (reservation) {
+    document.getElementById('reservation-id').value = reservation.id || '';
+     document.getElementById('name').value = reservation.nom_complet || ''; 
+    document.getElementById('email').value = reservation.email || '';
+    document.getElementById('telephone').value = reservation.telephone || '';
+    document.getElementById('heure').value = reservation.heure || '';
+}
+
+
+    modal.style.display = 'block'; // Display the modal
+}
+
+function closeModal() {
+    document.getElementById('reservation-modal').style.display = 'none'; // Correct ID
+}
+
+
+        function openModal() {
+            document.getElementById('reservation-modal').classList.add('show');
+        }
+   
+        function deleteReservation(id) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette réservation ?')) {
+                window.location.href = '/admin/delete/' + id;
+            }
+        }
+
+      const reservationsByHour = JSON.parse('{{ reservationsByHour|raw }}');
+        const reservationsByDay = JSON.parse('{{ reservationsByDay|raw }}');
+
+        // Graphique des réservations par heure (Bar Chart)
+        const ctx1 = document.getElementById("myChart").getContext("2d");
+        const myBarChart = new Chart(ctx1, {
+            type: "bar",
+            data: {
+                labels: reservationsByHour.labels,
+                datasets: [{
+                    label: "Réservations par heure",
+                    data: reservationsByHour.values,
+                    backgroundColor: "rgba(75, 192, 192, 0.2)",
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    x: { ticks: { stepSize: 1 } },
+                    y: { beginAtZero: true }
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+  
+
+     
+    </script>
+  
+</body>
+</html>

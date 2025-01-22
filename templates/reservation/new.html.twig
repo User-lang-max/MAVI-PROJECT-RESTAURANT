@@ -1,0 +1,16 @@
+{# templates/reservation/new.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle réservation{% endblock %}
+
+{% block body %}
+    <h1>Nouvelle réservation</h1>
+    {{ form_start(form) }}
+        {{ form_row(form.nom) }}
+        {{ form_row(form.prenom) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.telephone) }}
+        {{ form_row(form.heure) }}
+        <button type="submit" class="btn btn-primary">Réserver</button>
+    {{ form_end(form) }}
+{% endblock %}
