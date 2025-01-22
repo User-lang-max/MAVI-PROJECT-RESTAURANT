@@ -41,12 +41,12 @@ To run this project, ensure the following are installed:
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone <repository_url>
+   git clone https://github.com/User-lang-max/MAVI-PROJECT-RESTAURANT.git
    ```
 
 2. Navigate to the project directory:
    ```bash
-   cd <restaurant_portfolio>
+   cd restaurant_portfolio
    ```
 
 3. Install dependencies using Composer:
