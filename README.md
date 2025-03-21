@@ -46,7 +46,7 @@ To run this project, ensure the following are installed:
 
 2. Navigate to the project directory:
    ```bash
-   cd restaurant_portfolio
+   cd MAVI-PROJECT-RESTAURANT
    ```
 
 3. Install dependencies using Composer:
