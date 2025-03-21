@@ -41,12 +41,12 @@ To run this project, ensure the following are installed:
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/User-lang-max/MAVI-PROJECT-RESTAURANT.git
+   git clone https://github.com/User-lang-max/SYMFONY-PROJECT-RESTAURANT.git
    ```
 
 2. Navigate to the project directory:
    ```bash
-   cd MAVI-PROJECT-RESTAURANT
+   cd SYMFONY-PROJECT-RESTAURANT
    ```
 
 3. Install dependencies using Composer:
